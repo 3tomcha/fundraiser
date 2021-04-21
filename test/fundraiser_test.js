@@ -7,20 +7,20 @@ contract("Fundraiser", accounts => {
     const imageUrl = "http://images.jpg";
     const description = "test test";
     const beneficiary = accounts[1];
-    const custodian = accounts[0];
+    const owner = accounts[0];
 
+    beforeEach( async() => {
+        fundraiser = await FundraiserContract.new(
+            name,
+            url,
+            imageUrl,
+            description,
+            beneficiary,
+            owner
+            );
+    });
 
-    describe("initialization", () => {
-        beforeEach( async() => {
-            fundraiser = await FundraiserContract.new(
-                name,
-                url,
-                imageUrl,
-                description,
-                beneficiary,
-                custodian
-                );
-        });
+    describe("initialization", () => {        
 
         it("gets the beneficiary name", async() => {
             const actual = await fundraiser.name();
@@ -47,9 +47,20 @@ contract("Fundraiser", accounts => {
             assert.equal(actual, beneficiary, "beneficiary should match");
         });
 
-        it("gets the beneficiary custodian", async() => {
-            const actual = await fundraiser.custodian();
-            assert.equal(actual, custodian, "custodian should match");
+        it("gets the beneficiary owner", async() => {
+            const actual = await fundraiser.owner();
+            assert.equal(actual, owner, "owner should match");
         });
+    });
+
+    describe("setBeneficiary", () => {
+        const newBeneficiary = accounts[2];
+        
+        it("updated beneficiary when called by owner account", async() => {
+            await fundraiser.setBeneficiary (newBeneficiary, {from: owner});
+            const actualBeneficiary = await fundraiser.beneficiary();
+            assert.equal(actualBeneficiary, newBeneficiary, "beneficiaries should match");
+        });
+
     });
 });
