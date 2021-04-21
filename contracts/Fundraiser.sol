@@ -25,4 +25,9 @@ contract Fundraiser is Ownable{
         beneficiary = _beneficiary;
         transferOwnership(_custodian);
     }
+
+    // 金を得る人はownerしか設定できない
+    function setBeneficiary(address payable _beneficiary) public onlyOwner {
+        beneficiary = _beneficiary;
+    }
 }

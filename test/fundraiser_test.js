@@ -62,5 +62,17 @@ contract("Fundraiser", accounts => {
             assert.equal(actualBeneficiary, newBeneficiary, "beneficiaries should match");
         });
 
+        it("throw a erroe when called by non-owner account", async() => {
+            try {
+                await fundraiser.setBeneficiary(newBeneficiary, {from: accounts[3]});
+                assert.fail("withdraw was not restricted to owner");
+            } catch(error) {
+                const expectedError = "Ownable: caller is not the owner";
+                const actualError = error.reason;
+                assert.equal(actualError, expectedError, "should not permitted");
+            }
+            
+        });
+
     });
 });
