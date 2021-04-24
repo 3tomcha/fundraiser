@@ -171,4 +171,33 @@ contract("Fundraiser", accounts => {
         });
 
     });
+
+    describe("fallbackfunction", () => {
+        const value = web3.utils.toWei('0.0289');
+
+        it("increases the totalDonation amount", async() => {
+            const currentTotalDonations = await fundraiser.totalDonations();
+            
+            await web3.eth.sendTransaction({
+                to: fundraiser.address, from: accounts[9], value
+            });
+            const newTotalDonations = await fundraiser.totalDonations();
+
+            assert.equal(newTotalDonations -  currentTotalDonations, value, "difference should match the donation value");
+        });
+
+        it("increase donationsCount", async() => {
+            const currentDonationCount = await fundraiser.donationCount();
+
+            await web3.eth.sendTransaction(
+                { to: fundraiser.address, from: accounts[9], value}
+            );
+
+            const newDonationCount = await fundraiser.donationCount();
+
+            const diff = newDonationCount - currentDonationCount;
+
+            assert.equal(diff, 1, "donationsCount should increase by 1");
+        });
+    });
 });
