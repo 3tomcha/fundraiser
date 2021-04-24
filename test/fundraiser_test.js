@@ -165,5 +165,10 @@ contract("Fundraiser", accounts => {
 
         });
 
+        it("event received", async() => {
+            const tx = await fundraiser.withdraw({from: owner});
+            assert.equal(tx.logs[0].event, "Withdraw", "event should match");
+        });
+
     });
 });
