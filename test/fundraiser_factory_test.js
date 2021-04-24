@@ -22,7 +22,7 @@ contract("FundraiserFactory: createFundraiser", (accounts) => {
         fundraiserFactory = await FundraiserFactoryContract.deployed();
         const currentFundraisersCount = await fundraiserFactory.fundraisersCount();
 
-        await fundraiserFactory.createFundraisers(
+        await fundraiserFactory.createFundraiser(
             name,
             url,
             imageURL,
@@ -37,7 +37,7 @@ contract("FundraiserFactory: createFundraiser", (accounts) => {
 
     it("event", async() => {
 
-        const tx = await fundraiserFactory.createFundraisers(
+        const tx = await fundraiserFactory.createFundraiser(
             name,
             url,
             imageURL,
@@ -48,5 +48,42 @@ contract("FundraiserFactory: createFundraiser", (accounts) => {
         const expected = "FundraiserCreated";
 
         assert.equal(tx.logs[0].event, expected, "events should match");
+    });
+});
+
+contract("FundraisersFactory: fundraisers", (accounts) => {
+    async function createFundraisersFactory(fundraisersCount, accounts) {
+        const factory = await FundraiserFactoryContract.new();
+        await addFundraisers(factory, fundraisersCount, accounts);
+        return factory;
+    }
+
+    async function addFundraisers(factory, count, accounts) {
+        const name = "Beneficiary";
+        const lowerCaseName = name.toLocaleLowerCase();
+        const beneficiary = accounts[1];
+        
+        for (let i = 0; i < count; i++) {
+            await factory.createFundraiser(
+                `${name} ${i}`,
+                `${lowerCaseName}${i}.com`,
+                `${lowerCaseName}${i}.png`,
+                `Description for ${name} ${i}`,
+                beneficiary
+            );
+        }
+    }
+
+    describe("when fundraisers collection is empty", () => {
+        it("returns an empty collection", async() => {
+            const factory = await createFundraisersFactory(0, accounts);
+            const fundraisers = await factory.fundraisers(10, 0);
+
+            assert.equal(
+                fundraisers.length,
+                0,
+                "collection should be empty"
+            );
+        });
     });
 });

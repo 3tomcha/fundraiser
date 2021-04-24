@@ -10,7 +10,7 @@ contract FundraiserFactory {
         return _fundraisers.length;
     }
     
-    function createFundraisers(
+    function createFundraiser(
         string memory name,
         string memory url,
         string memory imageURL,
@@ -27,5 +27,13 @@ contract FundraiserFactory {
         );
         _fundraisers.push(fundraiser);
         emit FundraiserCreated(fundraiser, fundraiser.owner());   
+    }
+
+    function fundraisers(uint256 limit, uint256 offset) 
+        public 
+        view
+        returns(Fundraiser[] memory coll)
+    {
+        return coll;
     }
 }
