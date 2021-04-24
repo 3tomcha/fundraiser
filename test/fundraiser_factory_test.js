@@ -1,4 +1,5 @@
 const FundraiserFactoryContract = artifacts.require("FundraiserFactory");
+const FundraiserContract = artifacts.require("Fundraiser");
 
 contract("FundraiserFactory: deployment", () => {
     it("has been deployed", async() => {
@@ -119,5 +120,57 @@ contract("FundraisersFactory: fundraisers", (accounts) => {
                 "results size should be 30"
             );
         });
+    });
+
+    describe("varying offset", () => {
+        let factory;
+        beforeEach(async() => {
+            factory = await createFundraisersFactory(10, accounts);
+        });
+
+        it("containes the fundraiser with the appropritate offset", async() => {
+            const fundraisers = await factory.fundraisers(1, 0);
+            const fundraiser = await FundraiserContract.at(fundraisers[0]);
+            const name = await fundraiser.name();
+            assert.ok(await name.includes(0), `${name} did not include the offset`);
+        });
+
+        it("containes the fundraiser with the appropritate offset", async() => {
+            const fundraisers = await factory.fundraisers(1, 7);
+            const fundraiser = await FundraiserContract.at(fundraisers[0]);
+            const name = await fundraiser.name();
+            assert.ok(await name.includes(7), `${name} did not include the offset`);
+        });
+    });
+
+    describe("boundary conditions", () => {
+        let factory;
+        beforeEach(async() => {
+            factory = await createFundraisersFactory(10, accounts);
+        });
+
+        it("raisers out of bound error", async() => {
+            try {
+                const fundraisers = await factory.fundraisers(1, 11);
+                assert.fail("error was not raised");
+            } catch (error) {
+                const expected = "offset out of bounds";
+                assert.ok(error.message.includes(expected), `${error.message}`);
+            }
+        });
+
+        it("adjusts return size to prevent out of bounds error", async() => {
+            try {
+                const fundraisers = await factory.fundraisers(10, 5);
+                assert.equal(
+                    fundraisers.length,
+                    5,
+                    "collection adjusted"
+                );
+            } catch (error) {
+                assert.fail("limit and offset exceeds bounds");
+            }
+        });
+        
     });
 });
