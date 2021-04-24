@@ -1,3 +1,4 @@
+
 const FundraiserContract = artifacts.require("Fundraiser");
 
 contract("Fundraiser", accounts => {
@@ -70,9 +71,28 @@ contract("Fundraiser", accounts => {
                 const expectedError = "Ownable: caller is not the owner";
                 const actualError = error.reason;
                 assert.equal(actualError, expectedError, "should not permitted");
-            }
-            
+            }            
+        });
+    });
+
+    describe("making donations", () => {
+        const value = web3.utils.toWei('0.0289');
+        const donor = accounts[2];
+
+        it("increases myDonationCount", async () => {
+            const currentDonationCount = await fundraiser.myDonationCount({
+                from: donor
+            });
+
+            fundraiser.donate({from: donor, value});
+
+            const newDonationCount = await fundraiser.myDonationCount({
+                from: donor
+            });
+
+            assert.equal(1, newDonationCount - currentDonationCount, "myDonationCount should increment by 1");
         });
 
+        it("includes donation in myDonations");
     });
 });
