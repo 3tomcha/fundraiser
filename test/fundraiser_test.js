@@ -1,4 +1,3 @@
-
 const FundraiserContract = artifacts.require("Fundraiser");
 
 contract("Fundraiser", accounts => {
@@ -93,6 +92,20 @@ contract("Fundraiser", accounts => {
             assert.equal(1, newDonationCount - currentDonationCount, "myDonationCount should increment by 1");
         });
 
-        it("includes donation in myDonations");
+        it("includes donation in myDonations", async () => {
+            await fundraiser.donate({from: donor, value});
+            const {values, dates} = await fundraiser.myDonations({from: donor});
+            assert.equal(value, values[0], "values should match");
+            assert(dates[0], "date should be present");
+        });
+
+        it("increases the totalDonations amount", async() => {
+            const currentTotalDonations = await fundraiser.totalDonations();
+            fundraiser.donate({from: donor, value});
+            const newTotalDonations = await fundraiser.totalDonations();
+            const diff = newTotalDonations - currentTotalDonations;
+
+            assert.equal(diff, value, "difference should match the donation value");
+        });
     });
 });

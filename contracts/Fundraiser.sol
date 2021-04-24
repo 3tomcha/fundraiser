@@ -17,6 +17,7 @@ contract Fundraiser is Ownable{
     string public description;
     address payable public beneficiary;
     address public custodian;
+    uint256 public totalDonations;
 
     constructor(
         string memory _name,
@@ -49,5 +50,21 @@ contract Fundraiser is Ownable{
             date: block.timestamp
         });
         _donations[msg.sender].push(donation);
+        totalDonations.add(msg.value);
+    }
+
+    function myDonations() public view returns (uint256[] memory values, uint256[] memory dates){
+        
+        uint256 count = myDonationCount();
+        values = new uint256[](count);
+        dates = new uint256[](count);
+
+        for (uint256 i = 0; i < count; i++) {
+            Donation storage donation = _donations[msg.sender][i];
+            values[i] = donation.value;
+            dates[i] = donation.date;
+        }
+
+        return (values, dates);
     }
 }
