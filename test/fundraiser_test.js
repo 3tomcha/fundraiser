@@ -107,5 +107,13 @@ contract("Fundraiser", accounts => {
 
             assert.equal(diff, value, "difference should match the donation value");
         });
+
+        // it("increases the totalDonationcount", async() => {
+        //     const currentTotalDonationCount = fundraiser.totalDonationcount();
+        //     fundraiser.donate({from: donor, value});
+        //     const newTotalDonationCount = fundraiser.totalDonationcount();
+        //     assert.equal()
+        // });
+
     });
 });
