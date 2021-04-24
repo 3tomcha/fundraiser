@@ -121,6 +121,49 @@ contract("Fundraiser", accounts => {
             const expected = "DonationReceived";
             assert.equal(tx.logs[0].event, expected, "event should match");
         });
+    });
+
+    describe("withdraw funds", () => {
+        beforeEach(async() => {
+            await fundraiser.donate({
+                from: accounts[2], value: web3.utils.toWei('0.1')
+            });
+        });
+
+        describe("access controls", () => {
+            it("throw an error when called from a non-owner account", async() => {
+                try {
+                    await fundraiser.withdraw({from: accounts[3]});
+                    assert.fail("withdraw was not rescricted to owners");
+                } catch (error) {
+                    const expectedError = "Ownable: caller is not the owner";
+                    const actualError = error.reason;
+                    assert.equal(expectedError, actualError, "should not permitted");
+                }
+            });
+            it("permits the owner to call the function", async() => {
+                try {
+                    await fundraiser.withdraw({from: owner});
+                    assert(true, "no errors were thrown");
+                } catch (error) {
+                    assert.fail("should not have thrown an error");
+                }
+            });
+        });
+
+        it("transfer balance to beneficiary", async() => {
+
+            const currentBeneficiaryBalance = await web3.eth.getBalance(beneficiary); 
+            const currentContractBalance = await web3.eth.getBalance(fundraiser.address); 
+            await fundraiser.withdraw({from: owner});
+
+            const newBeneficiaryBalance = await web3.eth.getBalance(beneficiary);
+            const newContractBalance = await web3.eth.getBalance(fundraiser.address);
+            
+            assert.equal(0, newContractBalance, "contract should have a 0 balance");
+            assert.equal(newBeneficiaryBalance- currentBeneficiaryBalance, currentContractBalance, "beneficiary should receive all the funds");
+
+        });
 
     });
 });
