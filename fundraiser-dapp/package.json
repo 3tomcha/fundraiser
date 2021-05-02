@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@material-ui/core": "^4.11.4",
     "openzeppelin-solidity": "^4.1.0"
   }
 }

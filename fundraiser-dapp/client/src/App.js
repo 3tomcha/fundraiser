@@ -4,11 +4,22 @@ import getWeb3 from "./getWeb3";
 import { BrowserRouter as Router, Route, NavLink } from "react-router-dom";
 import NewFundraiser from './NewFundraiser';
 import Home from './Home';
+import { makeStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+
 
 import "./App.css";
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    flexGrow: 1
+  }
+}));
 const App = () => {
   const [state, setState] = useState({web3: null, accounts: null, contract: null});
+  const classes = useStyles();
 
   useEffect(() => {
     const init = async() => {
@@ -39,17 +50,15 @@ const App = () => {
 
   return (
     <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <NavLink to="/">Home</NavLink>
-            </li>
-            <li>
-              <NavLink to="/new/">NeW</NavLink>
-            </li>
-          </ul>
-        </nav>
+      <div className={classes.root}>
+        <AppBar position="static" color="default">
+          <Toolbar>
+            <Typography variant="h6" color="default">
+              <NavLink className="nav-link" to="/">Home</NavLink>
+            </Typography>
+              <NavLink className="nav-link" to="/new/">New</NavLink>
+          </Toolbar>
+        </AppBar>
         <Route path="/" exact component={Home}/>
         <Route path="/new/" exact component={NewFundraiser}/>
       </div>
