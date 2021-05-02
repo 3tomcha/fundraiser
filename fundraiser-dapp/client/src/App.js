@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import fundraiserFactoryContract from "./contracts/FundraiserFactory.json";
 import getWeb3 from "./getWeb3";
+import { BrowserRouter as Router, Route, NavLink } from "react-router-dom";
+import NewFundraiser from './NewFundraiser';
+import Home from './Home';
 
 import "./App.css";
 
@@ -35,9 +38,22 @@ const App = () => {
   }
 
   return (
-    <div>
-      <h1>Fundraiser</h1>
-    </div>
+    <Router>
+      <div>
+        <nav>
+          <ul>
+            <li>
+              <NavLink to="/">Home</NavLink>
+            </li>
+            <li>
+              <NavLink to="/new/">NeW</NavLink>
+            </li>
+          </ul>
+        </nav>
+        <Route path="/" exact component={Home}/>
+        <Route path="/new/" exact component={NewFundraiser}/>
+      </div>
+    </Router>
   );
 
 }
