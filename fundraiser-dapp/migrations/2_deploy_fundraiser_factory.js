@@ -1,7 +1,5 @@
-const simplesStorageContract = artifacts.require("SimpleStorage");
-const fundraiserFactoryContract = artifacts.require("FundraiserFactory");
+const fundraiserFactoryContract = artifacts.require("./FundraiserFactory.sol");
 
 module.exports = function(deployer) {
-    deployer.deploy(simplesStorageContract);
     deployer.deploy(fundraiserFactoryContract);
 }
