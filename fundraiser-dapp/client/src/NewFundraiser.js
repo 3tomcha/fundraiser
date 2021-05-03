@@ -50,9 +50,12 @@ const NewFundraiser = () => {
               );
               console.error(error);
             }
-          };          
+          }; 
+          init();
+               
     }, []);
 
+       
     const handleSubmit = async () => {
         await contract.methods.createFundraiser(
             name,
@@ -62,7 +65,7 @@ const NewFundraiser = () => {
             beneficiary
         ).send({ from: accounts[0] });
         alert('Successfully created fundraiser');
-      };
+      }; 
 
     return (
         <div className="create-fundraiser-container">
