@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import fundraiserContract from "./contracts/Fundraiser.json";
 import { makeStyles } from '@material-ui/core/styles';
-import { Card, CardActionArea, CardContent, CardMedia, Typography } from '@material-ui/core';
+import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@material-ui/core';
 import detectEthereumProvider from '@metamask/detect-provider';
 
 
@@ -16,6 +16,8 @@ const useStyles = makeStyles(thene => ({
         height: 140
     }
 }));
+
+
 
 const FundraiserCard = (props) => {
     const { fundraiser } = props;
@@ -65,10 +67,34 @@ const FundraiserCard = (props) => {
     const [ web3, setWeb3 ] = useState(null);
     const [ contract, setContract ] = useState(null);
     const [ accounts, setAccounts ] = useState(null);
+    const [ open, setOpen ] = useState(null);
 
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    }
 
     return (
         <div className="fundraiser-card-content">
+            <Dialog open={open}>
+                <DialogTitle>
+                    Donate to{fundName}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        <img src={imageURL} width="200px"/>
+                        <p>{description}</p>
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>
+                        Cancel
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <Card className={classes.card}>
                 <CardActionArea>
                     <CardMedia className={classes.media}
@@ -84,6 +110,13 @@ const FundraiserCard = (props) => {
                         </CardContent>
                     </CardMedia>
                 </CardActionArea>
+                <CardActions>
+                    <Button onClick={handleOpen}
+                            variant="contained"
+                            className={classes.button}>
+                    ViewMore
+                    </Button>
+                </CardActions>
             </Card>
         </div>
     );
