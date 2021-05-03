@@ -5,7 +5,7 @@ import fundraiserContract from "./contracts/Fundraiser.json";
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Input, Typography } from '@material-ui/core';
 import detectEthereumProvider from '@metamask/detect-provider';
-
+const cc = require('cryptocompare');
 
 const useStyles = makeStyles(thene => ({
     card: {
@@ -51,10 +51,17 @@ const FundraiserCard = (props) => {
             const imageURL = await instance.methods.imageUrl().call();
             const description = await instance.methods.description().call();
             const totalDonations = await instance.methods.totalDonations().call();
+
+            // 為替レートを計算
+            const exchangeRate = await cc.price('ETH', ['USD']);
+            const eth = await web3.utils.fromWei(totalDonations, 'ether');
+            const dollarDonationAmount = await eth * exchangeRate.USD;
+
             setFundName(name);
             setImageURL(imageURL);
             setDescription(description);
-            setTotalDonations(totalDonations);
+            setTotalDonations(dollarDonationAmount);
+            setExchangeRate(exchangeRate.USD);
 
         } catch(error) {
         alert(
@@ -74,6 +81,8 @@ const FundraiserCard = (props) => {
     const [ open, setOpen ] = useState(null);
     const [ donationAmount, setDonationAmount ] = useState(null);
     const [ totalDonations, setTotalDonations ] = useState(null);
+    const [ exchangeRate, setExchangeRate ] = useState(null);
+    const ethAmount = donationAmount / exchangeRate || 0;
 
     const handleOpen = () => {
         setOpen(true);
@@ -84,7 +93,9 @@ const FundraiserCard = (props) => {
     }
 
     const submitFunds = async () => {
-        const donation = web3.utils.toWei(donationAmount);
+        // ドルからイーサに変換する
+        const ethTotal = donationAmount / exchangeRate;
+        const donation = web3.utils.toWei(ethTotal.toString());
 
         await contract.methods.donate().send({
             from: accounts[0],
@@ -116,6 +127,7 @@ const FundraiserCard = (props) => {
                             onChange={(e) => setDonationAmount(e.target.value)}
                             placeholder="0.01"/>
                 </FormControl>
+                <p>Eth: {ethAmount}</p>
                 <Button onClick={submitFunds}>
                     Donate
                 </Button>
@@ -131,7 +143,7 @@ const FundraiserCard = (props) => {
                             </Typography>
                             <Typography varant="body2" color="textSecondary" component="p">
                                 <p>{description}</p>
-                                <p>TotalDonations: {totalDonations}</p>
+                                <p>TotalDonations: ${totalDonations}</p>
                             </Typography>
                         </CardContent>
                     </CardMedia>

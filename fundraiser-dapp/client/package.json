@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@metamask/detect-provider": "^1.2.0",
+    "cryptocompare": "^1.0.0",
     "openzeppelin-solidity": "^4.1.0",
     "react": "16.11.0",
     "react-dom": "16.11.0",
