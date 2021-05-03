@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
+import getWeb3 from "./getWeb3";
+import fundraiserFactoryContract from "./contracts/FundraiserFactory.json";
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles(theme => ({
     container: {
@@ -10,6 +13,9 @@ const useStyles = makeStyles(theme => ({
     TextField: {
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
+    },
+    button: {
+        margin: theme.spacing
     }
 }));
 
@@ -26,7 +32,37 @@ const NewFundraiser = () => {
     const classes = useStyles();
 
     useEffect(()=> {
+        const init = async() => {
+            try {
+              const web3 = await getWeb3();
+              const accounts = await web3.eth.getAccounts();
+              const networkId = await web3.eth.net.getId();
+              const deployedNetwork = fundraiserFactoryContract.networks[networkId];
+              const instance = new web3.eth.Contract(
+                fundraiserFactoryContract.abi,
+                deployedNetwork && deployedNetwork.address,
+              );
+              setContract(instance);
+              setAccounts(accounts);
+            } catch(error) {
+              alert(
+                  `Failed to load web3, accounts, or contract. Check console for detail`
+              );
+              console.error(error);
+            }
+          };          
     }, []);
+
+    const handleSubmit = async () => {
+        await contract.methods.createFundraiser(
+            name,
+            url,
+            imageURL,
+            description,
+            beneficiary
+        ).send({ from: accounts[0] });
+        alert('Successfully created fundraiser');
+      };
 
     return (
         <div className="create-fundraiser-container">
@@ -84,6 +120,12 @@ const NewFundraiser = () => {
                         onChange={(e) => setCustodian(e.target.value)}
                         valiant="outlined"
                         inputProps={{ 'aria-label': 'bare'}} />
+
+            <Button onClick={handleSubmit}
+                    variant="contained"
+                    className={classes.button}>
+            Submit
+            </Button>
 
         </div>
     );
