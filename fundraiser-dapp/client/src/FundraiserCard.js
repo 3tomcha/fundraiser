@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import fundraiserContract from "./contracts/Fundraiser.json";
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@material-ui/core';
+import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Input, Typography } from '@material-ui/core';
 import detectEthereumProvider from '@metamask/detect-provider';
 
 
@@ -22,6 +22,7 @@ const useStyles = makeStyles(thene => ({
 const FundraiserCard = (props) => {
     const { fundraiser } = props;
     const classes = useStyles();
+    
 
     useEffect(() => {
         if (fundraiser) {
@@ -43,14 +44,17 @@ const FundraiserCard = (props) => {
                 );
             setContract(instance);
             setAccounts(accounts);
+            setWeb3(web3);
 
             // ここで各コントラクトに関する情報を取得
             const name = await instance.methods.name().call();
             const imageURL = await instance.methods.imageUrl().call();
             const description = await instance.methods.description().call();
+            const totalDonations = await instance.methods.totalDonations().call();
             setFundName(name);
             setImageURL(imageURL);
             setDescription(description);
+            setTotalDonations(totalDonations);
 
         } catch(error) {
         alert(
@@ -68,12 +72,25 @@ const FundraiserCard = (props) => {
     const [ contract, setContract ] = useState(null);
     const [ accounts, setAccounts ] = useState(null);
     const [ open, setOpen ] = useState(null);
+    const [ donationAmount, setDonationAmount ] = useState(null);
+    const [ totalDonations, setTotalDonations ] = useState(null);
 
     const handleOpen = () => {
         setOpen(true);
     };
 
     const handleClose = () => {
+        setOpen(false);
+    }
+
+    const submitFunds = async () => {
+        const donation = web3.utils.toWei(donationAmount);
+
+        await contract.methods.donate().send({
+            from: accounts[0],
+            value: donation,
+            gas: 650000
+        });
         setOpen(false);
     }
 
@@ -94,6 +111,14 @@ const FundraiserCard = (props) => {
                         Cancel
                     </Button>
                 </DialogActions>
+                <FormControl>
+                    <Input value={donationAmount}
+                            onChange={(e) => setDonationAmount(e.target.value)}
+                            placeholder="0.01"/>
+                </FormControl>
+                <Button onClick={submitFunds}>
+                    Donate
+                </Button>
             </Dialog>
             <Card className={classes.card}>
                 <CardActionArea>
@@ -106,6 +131,7 @@ const FundraiserCard = (props) => {
                             </Typography>
                             <Typography varant="body2" color="textSecondary" component="p">
                                 <p>{description}</p>
+                                <p>TotalDonations: {totalDonations}</p>
                             </Typography>
                         </CardContent>
                     </CardMedia>
