@@ -28,6 +28,7 @@ const NewFundraiser = () => {
     const [ custodian, setCustodian ] = useState(null);
     const [ contract, setContract ] = useState(null);
     const [ accounts, setAccounts ] = useState(null);
+    const [ web3, setWeb3 ] = useState(null)
 
     const classes = useStyles();
 
@@ -42,6 +43,7 @@ const NewFundraiser = () => {
                 fundraiserFactoryContract.abi,
                 deployedNetwork && deployedNetwork.address,
               );
+              setWeb3(web3);
               setContract(instance);
               setAccounts(accounts);
             } catch(error) {
