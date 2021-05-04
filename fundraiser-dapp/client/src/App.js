@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 
 
 import "./App.css";
+import Receipts from "./Receipts";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -61,6 +62,7 @@ const App = () => {
         </AppBar>
         <Route path="/" exact component={Home}/>
         <Route path="/new/" exact component={NewFundraiser}/>
+        <Route path="/receipts/" exact component={Receipts}/>
       </div>
     </Router>
   );

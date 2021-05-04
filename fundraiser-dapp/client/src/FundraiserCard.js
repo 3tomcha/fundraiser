@@ -5,6 +5,7 @@ import fundraiserContract from "./contracts/Fundraiser.json";
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Input, Typography } from '@material-ui/core';
 import detectEthereumProvider from '@metamask/detect-provider';
+import { Link } from 'react-router-dom';
 const cc = require('cryptocompare');
 
 const useStyles = makeStyles(thene => ({
@@ -134,7 +135,13 @@ const FundraiserCard = (props) => {
                 <div>
                     <p>${donation.donationAmount}</p>
                     <Button>
+                        <Link to={{ pathname: '/receipts',
+                                    state: { fund: fundName,
+                                              donation: donation.donationAmount,
+                                              date: donation.date }
+                        }}>
                         Request Receipts
+                        </Link>
                     </Button>
                 </div>
             );
