@@ -63,6 +63,10 @@ const FundraiserCard = (props) => {
             setTotalDonations(dollarDonationAmount);
             setExchangeRate(exchangeRate.USD);
 
+            const userDonations = await instance.methods.myDonations().call({from: accounts[0]});
+            console.log(userDonations);
+            setUserDonations(userDonations);
+
         } catch(error) {
         alert(
             `App.js: Failed to load web3, accounts, or contract.
@@ -82,6 +86,7 @@ const FundraiserCard = (props) => {
     const [ donationAmount, setDonationAmount ] = useState(null);
     const [ totalDonations, setTotalDonations ] = useState(null);
     const [ exchangeRate, setExchangeRate ] = useState(null);
+    const [ userDonations, setUserDonations ] = useState(null);
     const ethAmount = donationAmount / exchangeRate || 0;
 
     const handleOpen = () => {
@@ -103,6 +108,37 @@ const FundraiserCard = (props) => {
             gas: 650000
         });
         setOpen(false);
+    }
+
+    const renderDonationsList = () => {
+        var donations = userDonations;
+        if (donations === null) {
+            return null;
+        } 
+        const totalDonations = donations.values.length;
+
+        let donationList = [];
+        for (let i = 0; i < totalDonations; i++) {
+            const ethAmount = web3.utils.fromWei(donations.values[i]);
+            const userDonation = ethAmount * exchangeRate;
+            const donationDate = donations.dates[i];
+            
+            donationList.push({
+                donationAmount: userDonation.toFixed(2),
+                date: donationDate
+            });
+        }
+
+        return donationList.map((donation) => {
+            return (
+                <div>
+                    <p>${donation.donationAmount}</p>
+                    <Button>
+                        Request Receipts
+                    </Button>
+                </div>
+            );
+        });
     }
 
     return (
@@ -131,6 +167,10 @@ const FundraiserCard = (props) => {
                 <Button onClick={submitFunds}>
                     Donate
                 </Button>
+                <div>
+                    <h3>myDonations</h3>
+                    {renderDonationsList()}
+                </div>
             </Dialog>
             <Card className={classes.card}>
                 <CardActionArea>
